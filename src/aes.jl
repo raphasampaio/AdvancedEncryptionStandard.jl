@@ -1,3 +1,79 @@
+function Base.hex2bytes(i::UInt32)
+    hex = string(i, base = 16)
+    return hex2bytes(hex)
+end
+
+function string_to_bytes(s::AbstractString)::Vector{UInt8}
+    return collect(codeunits(s))
+end
+
+function sub_word(input::UInt32)::UInt32
+    b0 = UInt32(SBOX[(input>>24)&0xff+1])
+    b1 = UInt32(SBOX[(input>>16)&0xff+1])
+    b2 = UInt32(SBOX[(input>>8)&0xff+1])
+    b3 = UInt32(SBOX[input&0xff+1])
+    return (b0 << 24) | (b1 << 16) | (b2 << 8) | b3
+end
+
+function inv_sub_word(input::UInt32)::UInt32
+    b0 = UInt32(INV_SBOX[(input>>24)&0xff+1])
+    b1 = UInt32(INV_SBOX[(input>>16)&0xff+1])
+    b2 = UInt32(INV_SBOX[(input>>8)&0xff+1])
+    b3 = UInt32(INV_SBOX[input&0xff+1])
+    return (b0 << 24) | (b1 << 16) | (b2 << 8) | b3
+end
+
+function sub_bytes!(state::Vector{UInt32})
+    for i in 1:length(state)
+        state[i] = sub_word(state[i])
+    end
+    return nothing
+end
+
+function inv_sub_bytes!(state::Vector{UInt32})
+    for i in 1:length(state)
+        state[i] = inv_sub_word(state[i])
+    end
+    return nothing
+end
+
+function rot_word_left(input::UInt32, n::UInt32)::UInt32
+    return input >> (32 - 8 * n) | input << (8 * n)
+end
+
+function rot_word_right(input::UInt32, n::UInt32)::UInt32
+    return input << (32 - 8 * n) | input >> (8 * n)
+end
+
+function shift_rows!(state::Vector{UInt32})
+    for i in 1:4
+        state[i] = rot_word_left(state[i], UInt32(i - 1))
+    end
+    return nothing
+end
+
+function inv_shift_rows!(state::Vector{UInt32})
+    for i in 1:4
+        state[i] = rot_word_right(state[i], UInt32(i - 1))
+    end
+    return nothing
+end
+
+function calc_mix_cols(a0::UInt8, a1::UInt8, a2::UInt8, a3::UInt8)
+    r0 = GMULBY2[a0+1] ⊻ GMULBY3[a1+1] ⊻ a2 ⊻ a3
+    r1 = a0 ⊻ GMULBY2[a1+1] ⊻ GMULBY3[a2+1] ⊻ a3
+    r2 = a0 ⊻ a1 ⊻ GMULBY2[a2+1] ⊻ GMULBY3[a3+1]
+    r3 = GMULBY3[a0+1] ⊻ a1 ⊻ a2 ⊻ GMULBY2[a3+1]
+    return r0, r1, r2, r3
+end
+
+function calc_inv_mix_cols(a0::UInt8, a1::UInt8, a2::UInt8, a3::UInt8)
+    r0 = GMULBY14[a0+1] ⊻ GMULBY11[a1+1] ⊻ GMULBY13[a2+1] ⊻ GMULBY9[a3+1]
+    r1 = GMULBY9[a0+1] ⊻ GMULBY14[a1+1] ⊻ GMULBY11[a2+1] ⊻ GMULBY13[a3+1]
+    r2 = GMULBY13[a0+1] ⊻ GMULBY9[a1+1] ⊻ GMULBY14[a2+1] ⊻ GMULBY11[a3+1]
+    r3 = GMULBY11[a0+1] ⊻ GMULBY13[a1+1] ⊻ GMULBY9[a2+1] ⊻ GMULBY14[a3+1]
+    return r0, r1, r2, r3
+end
 
 function manipulate_columns!(state::Vector{UInt32}, calc::Function)
     for i in 0:3
