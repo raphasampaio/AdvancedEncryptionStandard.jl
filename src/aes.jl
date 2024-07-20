@@ -112,14 +112,19 @@ function add_round_key!(state::Vector{UInt32}, round_key::Vector{UInt32})
     return nothing
 end
 
-function rcon(i::Int)::UInt32
-    return UInt32(RCON[i+1]) << 24
+function transpose(input::Vector{UInt32})
+    c0, c1, c2, c3 = UInt32(0), UInt32(0), UInt32(0), UInt32(0)
+    for i in 0:3
+        c0 |= (input[i+1] >> 24) << (8 * (3 - i))
+        c1 |= (input[i+1] >> 16 & 0xff) << (8 * (3 - i))
+        c2 |= (input[i+1] >> 8 & 0xff) << (8 * (3 - i))
+        c3 |= (input[i+1] & 0xff) << (8 * (3 - i))
+    end
+    return [c0, c1, c2, c3]
 end
 
-function transpose!(arr::Vector{UInt32})
-    for i in 1:4
-        arr[i] = (arr[i] & 0xFF000000) >> 24 | (arr[i] & 0x00FF0000) >> 8 | (arr[i] & 0x0000FF00) << 8 | (arr[i] & 0x000000FF) << 24
-    end
+function rcon(i::Int)::UInt32
+    return UInt32(RCON[i+1]) << 24
 end
 
 key_expansion(key::AbstractString) = key_expansion(string_to_bytes(key))
@@ -173,4 +178,4 @@ function encrypt!(state::Vector{UInt32}, expkey::Vector{UInt32})
     return nothing
 end
 
-encrypt(text::AbstractString, expkey::Vector{UInt32}) = encrypt(hex2bytes(text), expkey)
+# encrypt(text::AbstractString, expkey::Vector{UInt32}) = encrypt(hex2bytes(text), expkey)

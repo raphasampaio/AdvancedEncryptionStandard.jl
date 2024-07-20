@@ -3,6 +3,15 @@ import AdvancedEncryptionStandard as AES
 using Aqua
 using Test
 
+function test_aqua()
+    @testset "Ambiguities" begin
+        Aqua.test_ambiguities(AES, recursive = false)
+    end
+    Aqua.test_all(AES, ambiguities = false)
+
+    return nothing
+end
+
 function test_key_expansion()
     key = "YELLOW SUBMARINE"
     expandedkey = [0x594f5552, 0x45574249, 0x4c204d4e, 0x4c534145, 0x632c792b,
@@ -82,17 +91,21 @@ function test_add_round_key()
     return nothing
 end
 
+function test_transpose()
+	a = [0x8e9f01c6, 0x4ddc01c6, 0xa15801c6, 0xbc9d01c6]
+	b = [0x8e4da1bc, 0x9fdc589d, 0x01010101, 0xc6c6c6c6]
+	
+    @test AES.transpose(a) == b
+
+    return nothing
+end
+
 function test_aes()
     return nothing
 end
 
 function test_all()
-    # @testset "Aqua.jl" begin
-    #     @testset "Ambiguities" begin
-    #         Aqua.test_ambiguities(AES, recursive = false)
-    #     end
-    #     Aqua.test_all(AES, ambiguities = false)
-    # end
+    # @testset "Aqua.jl" begin test_aqua() end
 
     @testset "sub_word" begin test_sub_word() end
 
@@ -103,6 +116,8 @@ function test_all()
     @testset "mix_columns" begin test_mix_columns() end
 
     @testset "add_round_key" begin test_add_round_key() end
+
+    @testset "transpose" begin test_transpose() end
 
     # key = "PURPLE SIDEKICKS"
     # expkey = [0x594f5552, 0x45574249, 0x4c204d4e, 0x4c534145, 0x632c792b,
