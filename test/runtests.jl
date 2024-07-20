@@ -72,6 +72,16 @@ function test_mix_columns()
     return nothing
 end
 
+function test_add_round_key()
+    a = [0x41b9e08b, 0x6e8395a9, 0x18da8b38, 0x990065d0]
+    b = [0xe1c1e1c1, 0x21105219, 0x86b4fdb8, 0xf2ca9ec7]
+    c = [0xa078014a, 0x4f93c7b0, 0x9e6e7680, 0x6bcafb17]
+
+    @test AES.add_round_key(a, b) == c
+
+    return nothing
+end
+
 function test_aes()
     return nothing
 end
@@ -84,13 +94,15 @@ function test_all()
     #     Aqua.test_all(AES, ambiguities = false)
     # end
 
-    @testset "sub_word" test_sub_word()
+    @testset "sub_word" begin test_sub_word() end
 
-    @testset "sub_bytes" test_sub_bytes()
+    @testset "sub_bytes" begin test_sub_bytes() end
 
-    @testset "shift_rows" test_shift_rows()
+    @testset "shift_rows" begin test_shift_rows() end
 
-    @testset "mix_columns" test_mix_columns()
+    @testset "mix_columns" begin test_mix_columns() end
+
+    @testset "add_round_key" begin test_add_round_key() end
 
     # key = "PURPLE SIDEKICKS"
     # expkey = [0x594f5552, 0x45574249, 0x4c204d4e, 0x4c534145, 0x632c792b,
