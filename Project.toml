@@ -1,5 +1,5 @@
 name = "AdvancedEncryptionStandard"
-uuid = "ddf4c60a-9641-41d2-8697-8f687acbfbde"
+uuid = "ffb1ca98-47b0-4d1d-981f-3619cfc1f844"
 version = "0.1.0"
 
 [deps]

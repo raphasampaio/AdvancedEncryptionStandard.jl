@@ -1,4 +1,4 @@
-import AdvancedEncryptionStandard as AES 
+import AdvancedEncryptionStandard as AES
 
 using Aqua
 using Test
@@ -30,7 +30,7 @@ function test_key_expansion()
     return nothing
 end
 
-function test_aes()
+function test_sub_word()
     a = [0x8e9ff1c6, 0x4ddce1c7, 0xa158d1c8, 0xbc9dc1c9]
     b = [0x19dba1b4, 0xe386f8c6, 0x326a3ee8, 0x655e78dd]
 
@@ -39,30 +39,68 @@ function test_aes()
         @test AES.inv_sub_word(b[i]) == a[i]
     end
 
+    return nothing
+end
+
+function test_sub_bytes()
+    a = [0x8e9ff1c6, 0x4ddce1c7, 0xa158d1c8, 0xbc9dc1c9]
+    b = [0x19dba1b4, 0xe386f8c6, 0x326a3ee8, 0x655e78dd]
+
     @test AES.sub_bytes(a) == b
     @test AES.inv_sub_bytes(b) == a
 
+    return nothing
+end
+
+function test_shift_rows()
     a = [0x8e9f01c6, 0x4ddc01c6, 0xa15801c6, 0xbc9d01c6]
     b = [0x8e9f01c6, 0xdc01c64d, 0x01c6a158, 0xc6bc9d01]
 
     @test AES.shift_rows(a) == b
     @test AES.inv_shift_rows(b) == a
 
+    return nothing
+end
+
+function test_mix_columns()
     a = [0xdbf201c6, 0x130a01c6, 0x532201c6, 0x455c01c6]
     b = [0x8e9f01c6, 0x4ddc01c6, 0xa15801c6, 0xbc9d01c6]
 
     @test AES.mix_columns(a) == b
     @test AES.inv_mix_columns(b) == a
 
+    return nothing
+end
+
+function test_aes()
+    return nothing
+end
+
+function test_all()
+    # @testset "Aqua.jl" begin
+    #     @testset "Ambiguities" begin
+    #         Aqua.test_ambiguities(AES, recursive = false)
+    #     end
+    #     Aqua.test_all(AES, ambiguities = false)
+    # end
+
+    @testset "sub_word" test_sub_word()
+
+    @testset "sub_bytes" test_sub_bytes()
+
+    @testset "shift_rows" test_shift_rows()
+
+    @testset "mix_columns" test_mix_columns()
+
     # key = "PURPLE SIDEKICKS"
-	# expkey = [0x594f5552, 0x45574249, 0x4c204d4e, 0x4c534145, 0x632c792b,
+    # expkey = [0x594f5552, 0x45574249, 0x4c204d4e, 0x4c534145, 0x632c792b,
     # 0x6a3d7f36, 0x22024f01, 0x4c1f5e1b, 0x6448311a, 0x162b5462, 0x8d8fc0c1, 0xbda2fce7,
     # 0xca82b3a9, 0x6e451173, 0x19965697, 0x1fbd41a6, 0x4dcf7cd5, 0xe6a3b2c1, 0x3dabfd6a,
     # 0xcc713096, 0x25ea9643, 0xe447f534, 0xad06fb91, 0xcfbe8e18, 0x1df76122, 0x6522d7e3,
     # 0x6fd6c, 0xd56be5fd, 0x4cbbdaf8, 0x3517c023, 0x5452afc3, 0x462dc835, 0xea518b73,
     # 0x1b0cccef, 0xc2903ffc, 0x72ae2d7, 0x2e7ff487, 0xaba76b84, 0xcc5c639f, 0x88a24097,
     # 0x4738cc4b, 0x70d7bc38, 0x44187be4, 0x9f3d7dea]
-	# @show AES.encrypt(key, expkey)
+    # @show AES.encrypt(key, expkey)
 
     #     # AES-128
     # const key1 =    "2b7e151628aed2a6abf7158809cf4f3c"
@@ -83,19 +121,6 @@ function test_aes()
     # @test AES.encrypt(plain1, key1) == cipher1
     # @test AES.encrypt(plain2, key2) == cipher2
     # @test AES.encrypt(plain3, key3) == cipher3
-
-    return nothing
-end
-
-function test_all()
-    # @testset "Aqua.jl" begin
-    #     @testset "Ambiguities" begin
-    #         Aqua.test_ambiguities(AES, recursive = false)
-    #     end
-    #     Aqua.test_all(AES, ambiguities = false)
-    # end
-
-    @testset "AES" test_aes()
 
     return nothing
 end
