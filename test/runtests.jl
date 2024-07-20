@@ -12,33 +12,6 @@ function test_aqua()
     return nothing
 end
 
-function test_key_expansion()
-    key = "YELLOW SUBMARINE"
-    expandedkey = [0x594f5552, 0x45574249, 0x4c204d4e, 0x4c534145, 0x632c792b,
-        0x6a3d7f36, 0x22024f01, 0x4c1f5e1b, 0x6448311a, 0x162b5462, 0x8d8fc0c1, 0xbda2fce7,
-        0xca82b3a9, 0x6e451173, 0x19965697, 0x1fbd41a6, 0x4dcf7cd5, 0xe6a3b2c1, 0x3dabfd6a,
-        0xcc713096, 0x25ea9643, 0xe447f534, 0xad06fb91, 0xcfbe8e18, 0x1df76122, 0x6522d7e3,
-        0x6fd6c, 0xd56be5fd, 0x4cbbdaf8, 0x3517c023, 0x5452afc3, 0x462dc835, 0xea518b73,
-        0x1b0cccef, 0xc2903ffc, 0x72ae2d7, 0x2e7ff487, 0xaba76b84, 0xcc5c639f, 0x88a24097,
-        0x4738cc4b, 0x70d7bc38, 0x44187be4, 0x9f3d7dea]
-
-    @show actual = AES.key_expansion(key)
-
-    @test expandedkey == actual
-
-    # Nks = [4, 6, 8]
-    # Nbs = [4, 4, 4]
-    # Nb = 4
-    # Nrs = [10, 12, 14]
-    # WORDLENGTH = 4
-
-    #     keyunexp1 = 
-    #     keyexp1 = AES.KeyExpansion(keyunexp1, Nks[1], Nrs[1])
-    #     keyexp1expect = "2b7e151628aed2a6abf7158809cf4f3ca0fafe1788542cb123a339392a6c7605f2c295f27a96b9435935807a7359f67f3d80477d4716fe3e1e237e446d7a883bef44a541a8525b7fb671253bdb0bad00d4d1c6f87c839d87caf2b8bc11f915bc6d88a37a110b3efddbf98641ca0093fd4e54f70e5f5fc9f384a64fb24ea6dc4fead27321b58dbad2312bf5607f8d292fac7766f319fadc2128d12941575c006ed014f9a8c9ee2589e13f0cc8b6630ca6"
-
-    return nothing
-end
-
 function test_sub_word()
     a = [0x8e9ff1c6, 0x4ddce1c7, 0xa158d1c8, 0xbc9dc1c9]
     b = [0x19dba1b4, 0xe386f8c6, 0x326a3ee8, 0x655e78dd]
@@ -100,6 +73,52 @@ function test_transpose()
     return nothing
 end
 
+function test_key_expansion()
+
+    key = [0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0xcf, 0x9d, 0x5b, 0x6d, 0x3e, 0x11]
+    
+    expkeys = AES.key_expansion(key)
+    
+    # Check the length of the expanded key
+    @test length(expkeys) == 44
+    
+    # Check the first 4 words of the expanded key (same as input key)
+    @test expkeys[1:4] == [0x2b7e1516, 0x28aed2a6, 0xabf7cf9d, 0x5b6d3e11]
+
+    # Check some known values in the expanded key
+    @test expkeys[5] == 0xf2c295f2
+    @test expkeys[10] == 0x9ba35411
+    @test expkeys[44] == 0xd014f9a8
+    
+    # Additional checks can be added here
+
+    # a = "YELLOW SUBMARINE"
+    # b = [0x594f5552, 0x45574249, 0x4c204d4e, 0x4c534145, 0x632c792b,
+    #     0x6a3d7f36, 0x22024f01, 0x4c1f5e1b, 0x6448311a, 0x162b5462, 0x8d8fc0c1, 0xbda2fce7,
+    #     0xca82b3a9, 0x6e451173, 0x19965697, 0x1fbd41a6, 0x4dcf7cd5, 0xe6a3b2c1, 0x3dabfd6a,
+    #     0xcc713096, 0x25ea9643, 0xe447f534, 0xad06fb91, 0xcfbe8e18, 0x1df76122, 0x6522d7e3,
+    #     0x6fd6c, 0xd56be5fd, 0x4cbbdaf8, 0x3517c023, 0x5452afc3, 0x462dc835, 0xea518b73,
+    #     0x1b0cccef, 0xc2903ffc, 0x72ae2d7, 0x2e7ff487, 0xaba76b84, 0xcc5c639f, 0x88a24097,
+    #     0x4738cc4b, 0x70d7bc38, 0x44187be4, 0x9f3d7dea]
+
+    # @show c = AES.key_expansion(a)
+
+    # @test c == b
+
+    # Nks = [4, 6, 8]
+    # Nbs = [4, 4, 4]
+    # Nb = 4
+    # Nrs = [10, 12, 14]
+    # WORDLENGTH = 4
+
+    #     keyunexp1 = 
+    #     keyexp1 = AES.KeyExpansion(keyunexp1, Nks[1], Nrs[1])
+    #     keyexp1expect = "2b7e151628aed2a6abf7158809cf4f3ca0fafe1788542cb123a339392a6c7605f2c295f27a96b9435935807a7359f67f3d80477d4716fe3e1e237e446d7a883bef44a541a8525b7fb671253bdb0bad00d4d1c6f87c839d87caf2b8bc11f915bc6d88a37a110b3efddbf98641ca0093fd4e54f70e5f5fc9f384a64fb24ea6dc4fead27321b58dbad2312bf5607f8d292fac7766f319fadc2128d12941575c006ed014f9a8c9ee2589e13f0cc8b6630ca6"
+
+    return nothing
+end
+
+
 function test_aes()
     return nothing
 end
@@ -107,17 +126,19 @@ end
 function test_all()
     # @testset "Aqua.jl" begin test_aqua() end
 
-    @testset "sub_word" begin test_sub_word() end
+    # @testset "sub_word" begin test_sub_word() end
 
-    @testset "sub_bytes" begin test_sub_bytes() end
+    # @testset "sub_bytes" begin test_sub_bytes() end
 
-    @testset "shift_rows" begin test_shift_rows() end
+    # @testset "shift_rows" begin test_shift_rows() end
 
-    @testset "mix_columns" begin test_mix_columns() end
+    # @testset "mix_columns" begin test_mix_columns() end
 
-    @testset "add_round_key" begin test_add_round_key() end
+    # @testset "add_round_key" begin test_add_round_key() end
 
-    @testset "transpose" begin test_transpose() end
+    # @testset "transpose" begin test_transpose() end
+
+    @testset "key_expansion" begin test_key_expansion() end
 
     # key = "PURPLE SIDEKICKS"
     # expkey = [0x594f5552, 0x45574249, 0x4c204d4e, 0x4c534145, 0x632c792b,

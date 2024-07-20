@@ -134,24 +134,21 @@ function key_expansion(key::Vector{UInt8})::Vector{UInt32}
     rounds = 10
 
     expkeys = Vector{UInt32}(undef, 4 * (rounds + 1))
-
-    # Copy the original key into the first part of the expanded key
+    # the key occupies the first nwords slots of the expanded key
     for i in 1:nwords
-        expkeys[i] = UInt32(key[(i-1)*4+1]) << 24 | UInt32(key[(i-1)*4+2]) << 16 | UInt32(key[(i-1)*4+3]) << 8 | UInt32(key[(i-1)*4+4])
+        expkeys[i] = UInt32(key[(i - 1) * 4 + 1]) << 24 | UInt32(key[(i - 1) * 4 + 2]) << 16 | UInt32(key[(i - 1) * 4 + 3]) << 8 | UInt32(key[(i - 1) * 4 + 4])
     end
 
-    for i in nwords+1:4*(rounds+1)
-        temp = expkeys[i-1]
-        if mod(i, nwords) == 1
-            temp = rot_word_left(temp, UInt32(1))
-            temp = sub_word(temp)
-            temp = temp ⊻ rcon(div(i, nwords) - 1)
+    for i in nwords + 1:4 * (rounds + 1)
+        temp = expkeys[i - 1]
+        if mod(i - 1, nwords) == 0
+            temp = sub_word(rot_word_left(temp, UInt32(1))) ⊻ rcon((i - 1) ÷ nwords)
         end
-        expkeys[i] = expkeys[i-nwords] ⊻ temp
+        expkeys[i] = expkeys[i - nwords] ⊻ temp
     end
 
     for j in 1:4:length(expkeys)
-        transpose!(expkeys[j:j+3])
+        expkeys[j:j+3] = transpose(expkeys[j:j+3])
     end
 
     return expkeys
