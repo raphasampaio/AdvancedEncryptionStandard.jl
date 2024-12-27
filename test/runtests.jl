@@ -179,7 +179,9 @@ function test_encrypt()
 end
 
 function test_all()
-    # @testset "Aqua.jl" begin test_aqua() end
+    @testset "Aqua.jl" begin
+        test_aqua()
+    end
 
     @testset "helpers" begin
         test_helpers()
