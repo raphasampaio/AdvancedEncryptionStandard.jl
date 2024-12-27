@@ -150,30 +150,23 @@ function test_encrypt()
         0x282603db, 0x7332561f, 0xb8d3bb7a, 0x85d39c0b,
     ]
 
-    state = [
+    decrypted_state = [
         0x41052b1a,
         0x7e4da6d6,
         0x3766c538,
         0xa601d2dd,
     ]
 
-    AES.encrypt!(state, expanded_key)
+    encrypted_state = AES.encrypt(decrypted_state, expanded_key)
 
-    @test state == [
+    @test encrypted_state == [
         0x2449d33c,
         0x59034ddd,
         0xc45e681f,
         0xb349e5f4,
     ]
 
-    AES.decrypt!(state, expanded_key)
-
-    @test state == [
-        0x41052b1a,
-        0x7e4da6d6,
-        0x3766c538,
-        0xa601d2dd,
-    ]
+    @test decrypted_state == AES.decrypt(encrypted_state, expanded_key)
 
     return nothing
 end

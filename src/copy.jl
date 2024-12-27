@@ -45,3 +45,9 @@ function encrypt(state::Vector{UInt32}, expanded_key::Vector{UInt32})
     encrypt!(state_copy, expanded_key)
     return state_copy
 end
+
+function decrypt(state::Vector{UInt32}, expanded_key::Vector{UInt32})
+    state_copy = copy(state)
+    decrypt!(state_copy, expanded_key)
+    return state_copy
+end
