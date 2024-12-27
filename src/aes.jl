@@ -1,12 +1,3 @@
-function Base.hex2bytes(i::UInt32)
-    hex = string(i, base = 16)
-    return hex2bytes(hex)
-end
-
-function string_to_bytes(s::AbstractString)::Vector{UInt8}
-    return collect(codeunits(s))
-end
-
 function sub_word(input::UInt32)::UInt32
     b0 = UInt32(SBOX[(input>>24)&0xff+1])
     b1 = UInt32(SBOX[(input>>16)&0xff+1])
@@ -36,6 +27,8 @@ function inv_sub_bytes!(state::Vector{UInt32})
     end
     return nothing
 end
+
+rot_word_left(input::UInt32, n::Integer) = rot_word_left(input, UInt32(n))
 
 function rot_word_left(input::UInt32, n::UInt32)::UInt32
     return input >> (32 - 8 * n) | input << (8 * n)
@@ -127,50 +120,84 @@ function rcon(i::Int)::UInt32
     return UInt32(RCON[i+1]) << 24
 end
 
-key_expansion(key::AbstractString) = key_expansion(string_to_bytes(key))
-
 function key_expansion(key::Vector{UInt8})::Vector{UInt32}
     nwords = 4
     rounds = 10
+    size = 4 * (rounds + 1)
 
-    expkeys = Vector{UInt32}(undef, 4 * (rounds + 1))
-    # the key occupies the first nwords slots of the expanded key
+    expanded_key = Vector{UInt32}(undef, size)
+
     for i in 1:nwords
-        expkeys[i] = UInt32(key[(i - 1) * 4 + 1]) << 24 | UInt32(key[(i - 1) * 4 + 2]) << 16 | UInt32(key[(i - 1) * 4 + 3]) << 8 | UInt32(key[(i - 1) * 4 + 4])
+        k1 = UInt32(key[(i - 1) * 4 + 1]) << 24 
+        k2 = UInt32(key[(i - 1) * 4 + 2]) << 16
+        k3 = UInt32(key[(i - 1) * 4 + 3]) << 8
+        k4 = UInt32(key[(i - 1) * 4 + 4])
+
+        expanded_key[i] = k1 | k2 | k3 | k4
     end
 
-    for i in nwords + 1:4 * (rounds + 1)
-        temp = expkeys[i - 1]
-        if mod(i - 1, nwords) == 0
-            temp = sub_word(rot_word_left(temp, UInt32(1))) ⊻ rcon((i - 1) ÷ nwords)
+    for i in nwords + 1:nwords:size
+        temp = expanded_key[i - 1]
+        temp = rot_word_left(temp, 1)
+        temp = sub_word(temp)
+        temp = temp ⊻ rcon((i - 1) ÷ nwords - 1)
+        expanded_key[i] = temp ⊻ expanded_key[i - nwords]
+
+        for j in 1:3
+            expanded_key[i + j] = expanded_key[i + j - 1] ⊻ expanded_key[i + j - nwords]
         end
-        expkeys[i] = expkeys[i - nwords] ⊻ temp
     end
 
-    for j in 1:4:length(expkeys)
-        expkeys[j:j+3] = transpose(expkeys[j:j+3])
+    for i in 1:nwords:size
+        transposed = transpose(expanded_key[i:i+3])
+        expanded_key[i] = transposed[1]
+        expanded_key[i + 1] = transposed[2]
+        expanded_key[i + 2] = transposed[3]
+        expanded_key[i + 3] = transposed[4]
     end
 
-    return expkeys
+    return expanded_key
 end
 
-function encrypt!(state::Vector{UInt32}, expkey::Vector{UInt32})
+function encrypt!(state::Vector{UInt32}, expanded_key::Vector{UInt32})
     keyi = 1
-    add_round_key(state, expkey[keyi:keyi+3])
+    add_round_key!(state, expanded_key[keyi:keyi+3])
     keyi += 4
-    rounds = length(expkey) ÷ 4 - 2
+    rounds = length(expanded_key) ÷ 4 - 2
 
-    for i in 1:rounds
-        sub_bytes(state)
-        shift_rows(state)
-        mix_columns(state)
-        add_round_key(state, expkey[keyi:keyi+3])
+    for _ in 1:rounds
+        sub_bytes!(state)
+        shift_rows!(state)
+        mix_columns!(state)
+        add_round_key!(state, expanded_key[keyi:keyi+3])
         keyi += 4
     end
 
-    sub_bytes(state)
-    shift_rows(state)
-    add_round_key(state, expkey[keyi:keyi+3])
+    sub_bytes!(state)
+    shift_rows!(state)
+    add_round_key!(state, expanded_key[keyi:keyi+3])
+
+    return nothing
+end
+
+function decrypt!(state::Vector{UInt32}, expanded_key::Vector{UInt32})
+    keyi = length(expanded_key) - 3
+    add_round_key!(state, expanded_key[keyi:keyi+3])
+    keyi -= 4
+    rounds = length(expanded_key) ÷ 4 - 2
+
+    for _ in 1:rounds
+        inv_shift_rows!(state)
+        inv_sub_bytes!(state)
+        add_round_key!(state, expanded_key[keyi:keyi+3])
+        keyi -= 4
+        inv_mix_columns!(state)
+    end
+
+    inv_shift_rows!(state)
+    inv_sub_bytes!(state)
+    @show keyi
+    add_round_key!(state, expanded_key[keyi:keyi+3])
 
     return nothing
 end
