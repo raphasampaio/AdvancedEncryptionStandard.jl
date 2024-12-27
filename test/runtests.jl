@@ -12,6 +12,33 @@ function test_aqua()
     return nothing
 end
 
+function test_helpers()
+    @test AES.string_to_bytes("YELLOW SUBMARINE") == [
+        0x59, 0x45, 0x4c, 0x4c,
+        0x4f, 0x57, 0x20, 0x53,
+        0x55, 0x42, 0x4d, 0x41,
+        0x52, 0x49, 0x4e, 0x45,
+    ]
+
+    @test AES.vector_uint32_to_string(
+        AES.string_to_vector_uint32("YELLOW SUBMARINE")
+    ) == "YELLOW SUBMARINE"
+
+    data = Vector{UInt32}(AES.add_padding(Vector{UInt8}("YELLOW SUBMARINE"), 16))
+    data = Vector{UInt32}(AES.add_padding(Vector{UInt8}("YELLOW SUBMARINEEE"), 16))
+    # @show A = Vector{UInt32}(AES.trim_padding(AES.unpack(data)))
+    # @show AES.vector_uint32_to_string(A)
+
+    @test AES.string_to_bytes("PURPLE SIDEKICKS") == [
+        0x50, 0x55, 0x52, 0x50,
+        0x4c, 0x45, 0x20, 0x53,
+        0x49, 0x44, 0x45, 0x4b,
+        0x49, 0x43, 0x4b, 0x53,
+    ]
+
+    return nothing
+end
+
 function test_sub_word()
     a = [0x8e9ff1c6, 0x4ddce1c7, 0xa158d1c8, 0xbc9dc1c9]
     b = [0x19dba1b4, 0xe386f8c6, 0x326a3ee8, 0x655e78dd]
@@ -74,15 +101,6 @@ function test_transpose()
 end
 
 function test_key_expansion()
-    # key = "YELLOW SUBMARINE"
-
-    key = [
-        0x59, 0x45, 0x4c, 0x4c,
-        0x4f, 0x57, 0x20, 0x53,
-        0x55, 0x42, 0x4d, 0x41,
-        0x52, 0x49, 0x4e, 0x45,
-    ]
-
     expanded_key = [
         0x594f5552, 0x45574249, 0x4c204d4e, 0x4c534145,
         0x632c792b, 0x6a3d7f36, 0x22024f01, 0x4c1f5e1b,
@@ -97,14 +115,7 @@ function test_key_expansion()
         0x4738cc4b, 0x70d7bc38, 0x44187be4, 0x9f3d7dea,
     ]
 
-    @test AES.key_expansion(key) == expanded_key
-
-    key = [
-        0x50, 0x55, 0x52, 0x50,
-        0x4c, 0x45, 0x20, 0x53,
-        0x49, 0x44, 0x45, 0x4b,
-        0x49, 0x43, 0x4b, 0x53,
-    ]
+    @test AES.key_expansion("YELLOW SUBMARINE") == expanded_key
 
     expanded_key = [
         0x504c4949, 0x55454443, 0x5220454b, 0x50534b53,
@@ -120,7 +131,7 @@ function test_key_expansion()
         0x282603db, 0x7332561f, 0xb8d3bb7a, 0x85d39c0b,
     ]
 
-    @test AES.key_expansion(key) == expanded_key
+    @test AES.key_expansion("PURPLE SIDEKICKS") == expanded_key
 
     return nothing
 end
@@ -156,31 +167,6 @@ function test_encrypt()
         0xb349e5f4,
     ]
 
-    return nothing
-end
-
-function test_decrypt()
-    expanded_key = [
-        0x504c4949, 0x55454443, 0x5220454b, 0x50534b53,
-        0x4b074e07, 0xe6a3e7a4, 0xbf9fda91, 0x6b387320,
-        0x0007494e, 0x67c42387, 0x08974ddc, 0xae96e5c5,
-        0x13145d13, 0xe1250681, 0xae3974a8, 0x8117f237,
-        0x17035e4d, 0x23060081, 0x340d79d1, 0xfceb192e,
-        0x0b08561b, 0x1d1b1b9a, 0x050871a0, 0x1ff4edc3,
-        0x939bcdd6, 0xfde6fd67, 0x2b2352f2, 0xb044a96a,
-        0x56cd00d6, 0x74926f08, 0x290a58aa, 0x4602abc1,
-        0xe62b2bfd, 0xd84a252d, 0x515b03a9, 0xb0b219d8,
-        0x250e25d8, 0x0b416449, 0x306b68c1, 0xe4564f97,
-        0x282603db, 0x7332561f, 0xb8d3bb7a, 0x85d39c0b,
-    ]
-
-    state = [
-        0x2449d33c,
-        0x59034ddd,
-        0xc45e681f,
-        0xb349e5f4,
-    ]
-
     AES.decrypt!(state, expanded_key)
 
     @test state == [
@@ -195,6 +181,10 @@ end
 
 function test_all()
     # @testset "Aqua.jl" begin test_aqua() end
+
+    @testset "helpers" begin
+        test_helpers()
+    end
 
     @testset "sub_word" begin
         test_sub_word()
@@ -226,10 +216,6 @@ function test_all()
 
     @testset "encrypt" begin
         test_encrypt()
-    end
-
-    @testset "decrypt" begin
-        test_decrypt()
     end
 
     return nothing

@@ -120,6 +120,8 @@ function rcon(i::Int)::UInt32
     return UInt32(RCON[i+1]) << 24
 end
 
+key_expansion(key::AbstractString) = key_expansion(collect(UInt8, key))
+
 function key_expansion(key::Vector{UInt8})::Vector{UInt32}
     nwords = 4
     rounds = 10
@@ -196,10 +198,9 @@ function decrypt!(state::Vector{UInt32}, expanded_key::Vector{UInt32})
 
     inv_shift_rows!(state)
     inv_sub_bytes!(state)
-    @show keyi
     add_round_key!(state, expanded_key[keyi:keyi+3])
 
     return nothing
 end
 
-# encrypt(text::AbstractString, expkey::Vector{UInt32}) = encrypt(hex2bytes(text), expkey)
+# encrypt(text::AbstractString, expanded_key::Vector{UInt32}) = encrypt(hex2bytes(text), expanded_key)
