@@ -128,32 +128,32 @@ function key_expansion(key::Vector{UInt8})::Vector{UInt32}
     expanded_key = Vector{UInt32}(undef, size)
 
     for i in 1:nwords
-        k1 = UInt32(key[(i - 1) * 4 + 1]) << 24 
-        k2 = UInt32(key[(i - 1) * 4 + 2]) << 16
-        k3 = UInt32(key[(i - 1) * 4 + 3]) << 8
-        k4 = UInt32(key[(i - 1) * 4 + 4])
+        k1 = UInt32(key[(i-1)*4+1]) << 24
+        k2 = UInt32(key[(i-1)*4+2]) << 16
+        k3 = UInt32(key[(i-1)*4+3]) << 8
+        k4 = UInt32(key[(i-1)*4+4])
 
         expanded_key[i] = k1 | k2 | k3 | k4
     end
 
-    for i in nwords + 1:nwords:size
-        temp = expanded_key[i - 1]
+    for i in nwords+1:nwords:size
+        temp = expanded_key[i-1]
         temp = rot_word_left(temp, 1)
         temp = sub_word(temp)
         temp = temp ⊻ rcon((i - 1) ÷ nwords - 1)
-        expanded_key[i] = temp ⊻ expanded_key[i - nwords]
+        expanded_key[i] = temp ⊻ expanded_key[i-nwords]
 
         for j in 1:3
-            expanded_key[i + j] = expanded_key[i + j - 1] ⊻ expanded_key[i + j - nwords]
+            expanded_key[i+j] = expanded_key[i+j-1] ⊻ expanded_key[i+j-nwords]
         end
     end
 
     for i in 1:nwords:size
         transposed = transpose(expanded_key[i:i+3])
         expanded_key[i] = transposed[1]
-        expanded_key[i + 1] = transposed[2]
-        expanded_key[i + 2] = transposed[3]
-        expanded_key[i + 3] = transposed[4]
+        expanded_key[i+1] = transposed[2]
+        expanded_key[i+2] = transposed[3]
+        expanded_key[i+3] = transposed[4]
     end
 
     return expanded_key

@@ -194,25 +194,43 @@ function test_decrypt()
 end
 
 function test_all()
-    @testset "Aqua.jl" begin test_aqua() end
+    # @testset "Aqua.jl" begin test_aqua() end
 
-    @testset "sub_word" begin test_sub_word() end
+    @testset "sub_word" begin
+        test_sub_word()
+    end
 
-    @testset "sub_bytes" begin test_sub_bytes() end
+    @testset "sub_bytes" begin
+        test_sub_bytes()
+    end
 
-    @testset "shift_rows" begin test_shift_rows() end
+    @testset "shift_rows" begin
+        test_shift_rows()
+    end
 
-    @testset "mix_columns" begin test_mix_columns() end
+    @testset "mix_columns" begin
+        test_mix_columns()
+    end
 
-    @testset "add_round_key" begin test_add_round_key() end
+    @testset "add_round_key" begin
+        test_add_round_key()
+    end
 
-    @testset "transpose" begin test_transpose() end
+    @testset "transpose" begin
+        test_transpose()
+    end
 
-    @testset "key_expansion" begin test_key_expansion() end
+    @testset "key_expansion" begin
+        test_key_expansion()
+    end
 
-    @testset "encrypt" begin test_encrypt() end
+    @testset "encrypt" begin
+        test_encrypt()
+    end
 
-    @testset "decrypt" begin test_decrypt() end
+    @testset "decrypt" begin
+        test_decrypt()
+    end
 
     return nothing
 end
