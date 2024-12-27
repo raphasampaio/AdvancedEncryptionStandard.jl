@@ -20,21 +20,20 @@ function test_helpers()
         0x52, 0x49, 0x4e, 0x45,
     ]
 
-    @test AES.vector_uint32_to_string(
-        AES.string_to_vector_uint32("YELLOW SUBMARINE"),
-    ) == "YELLOW SUBMARINE"
-
-    data = Vector{UInt32}(AES.add_padding(Vector{UInt8}("YELLOW SUBMARINE"), 16))
-    data = Vector{UInt32}(AES.add_padding(Vector{UInt8}("YELLOW SUBMARINEEE"), 16))
-    # @show A = Vector{UInt32}(AES.trim_padding(AES.unpack(data)))
-    # @show AES.vector_uint32_to_string(A)
-
     @test AES.string_to_bytes("PURPLE SIDEKICKS") == [
         0x50, 0x55, 0x52, 0x50,
         0x4c, 0x45, 0x20, 0x53,
         0x49, 0x44, 0x45, 0x4b,
         0x49, 0x43, 0x4b, 0x53,
     ]
+
+    @test AES.vector_uint32_to_string(
+        AES.string_to_vector_uint32("YELLOW SUBMARINE"),
+    ) == "YELLOW SUBMARINE"
+
+    @test AES.vector_uint32_to_string(
+        AES.string_to_vector_uint32("PURPLE SIDEKICKS"),
+    ) == "PURPLE SIDEKICKS"
 
     return nothing
 end

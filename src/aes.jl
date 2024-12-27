@@ -28,7 +28,7 @@ function inv_sub_bytes!(state::Vector{UInt32})
     return nothing
 end
 
-rot_word_left(input::UInt32, n::Integer) = rot_word_left(input, UInt32(n))
+rot_word_left(input::UInt32, n::Integer)::UInt32 = rot_word_left(input, UInt32(n))
 
 function rot_word_left(input::UInt32, n::UInt32)::UInt32
     return input >> (32 - 8 * n) | input << (8 * n)
@@ -120,7 +120,7 @@ function rcon(i::Int)::UInt32
     return UInt32(RCON[i+1]) << 24
 end
 
-key_expansion(key::AbstractString) = key_expansion(collect(UInt8, key))
+key_expansion(key::AbstractString)::Vector{UInt32} = key_expansion(collect(UInt8, key))
 
 function key_expansion(key::Vector{UInt8})::Vector{UInt32}
     nwords = 4
@@ -152,10 +152,10 @@ function key_expansion(key::Vector{UInt8})::Vector{UInt32}
 
     for i in 1:nwords:size
         transposed = transpose(expanded_key[i:i+3])
-        expanded_key[i] = transposed[1]
-        expanded_key[i+1] = transposed[2]
-        expanded_key[i+2] = transposed[3]
-        expanded_key[i+3] = transposed[4]
+
+        for j in 0:3
+            expanded_key[i+j] = transposed[j+1]
+        end
     end
 
     return expanded_key
