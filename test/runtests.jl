@@ -21,7 +21,7 @@ function test_helpers()
     ]
 
     @test AES.vector_uint32_to_string(
-        AES.string_to_vector_uint32("YELLOW SUBMARINE")
+        AES.string_to_vector_uint32("YELLOW SUBMARINE"),
     ) == "YELLOW SUBMARINE"
 
     data = Vector{UInt32}(AES.add_padding(Vector{UInt8}("YELLOW SUBMARINE"), 16))

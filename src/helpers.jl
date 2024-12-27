@@ -11,11 +11,11 @@ function string_to_vector_uint32(string::AbstractString)::Vector{UInt32}
     @assert length(string) % 4 == 0 "String length must be a multiple of 4 for UInt32 conversion"
     bytes = collect(UInt8, string)
     return reinterpret(UInt32, bytes)
-  end
+end
 
-  function vector_uint32_to_string(vector::Vector{UInt32})::String
+function vector_uint32_to_string(vector::Vector{UInt32})::String
     return String(reinterpret(UInt8, vector))
-  end
+end
 
 function pack(vec::Vector{UInt8})::Vector{UInt32}
     @assert length(vec) % 4 == 0
