@@ -1,4 +1,4 @@
-function to_string(vector::Vector{UInt8})::String 
+function to_string(vector::Vector{UInt8})::String
     return String(vector)
 end
 
