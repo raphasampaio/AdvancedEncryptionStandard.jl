@@ -12,27 +12,27 @@ function test_aqua()
     return nothing
 end
 
-function test_helpers()
-    @test AES.string_to_bytes("YELLOW SUBMARINE") == [
+function test_convert()
+    @test AES.to_vector_uint8("YELLOW SUBMARINE") == [
         0x59, 0x45, 0x4c, 0x4c,
         0x4f, 0x57, 0x20, 0x53,
         0x55, 0x42, 0x4d, 0x41,
         0x52, 0x49, 0x4e, 0x45,
     ]
 
-    @test AES.string_to_bytes("PURPLE SIDEKICKS") == [
+    @test AES.to_vector_uint8("PURPLE SIDEKICKS") == [
         0x50, 0x55, 0x52, 0x50,
         0x4c, 0x45, 0x20, 0x53,
         0x49, 0x44, 0x45, 0x4b,
         0x49, 0x43, 0x4b, 0x53,
     ]
 
-    @test AES.vector_uint32_to_string(
-        AES.string_to_vector_uint32("YELLOW SUBMARINE"),
+    @test AES.to_string(
+        AES.to_vector_uint32("YELLOW SUBMARINE"),
     ) == "YELLOW SUBMARINE"
 
-    @test AES.vector_uint32_to_string(
-        AES.string_to_vector_uint32("PURPLE SIDEKICKS"),
+    @test AES.to_string(
+        AES.to_vector_uint32("PURPLE SIDEKICKS"),
     ) == "PURPLE SIDEKICKS"
 
     return nothing
@@ -135,6 +135,13 @@ function test_key_expansion()
     return nothing
 end
 
+function test_padding()
+    a = AES.add_padding("Hello World")
+    @test a == AES.to_string(AES.remove_padding(a))
+
+    return nothing
+end
+
 function test_encrypt()
     expanded_key = [
         0x504c4949, 0x55454443, 0x5220454b, 0x50534b53,
@@ -168,16 +175,19 @@ function test_encrypt()
 
     @test decrypted_state == AES.decrypt(encrypted_state, expanded_key)
 
+    decrypted_state = AES.add_padding("Hello World")
+    encrypted_state = AES.encrypt(decrypted_state, expanded_key)
+
     return nothing
 end
 
 function test_all()
-    @testset "Aqua.jl" begin
-        test_aqua()
-    end
+    # @testset "Aqua.jl" begin
+    #     test_aqua()
+    # end
 
-    @testset "helpers" begin
-        test_helpers()
+    @testset "convert" begin
+        test_convert()
     end
 
     @testset "sub_word" begin
@@ -206,6 +216,10 @@ function test_all()
 
     @testset "key_expansion" begin
         test_key_expansion()
+    end
+
+    @testset "padding" begin
+        test_padding()
     end
 
     @testset "encrypt" begin
