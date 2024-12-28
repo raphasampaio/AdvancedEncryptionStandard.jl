@@ -1,6 +1,6 @@
-function to_string(vector::Vector{UInt8})::String
-    return String(vector)
-end
+# function to_string(vector::Vector{UInt8})::String
+#     return String(vector)
+# end
 
 function to_string(vector::Vector{UInt32})::String
     return String(reinterpret(UInt8, vector))

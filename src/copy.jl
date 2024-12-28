@@ -52,11 +52,11 @@ function encrypt(state::Vector{UInt32}, expanded_key::Vector{UInt32})
     return state_copy
 end
 
-function decrypt(state::Vector{UInt8}, expanded_key::Vector{UInt32})
-    state_copy = to_vector_uint32(state)
-    decrypt!(state_copy, expanded_key)
-    return state_copy
-end
+# function decrypt(state::Vector{UInt8}, expanded_key::Vector{UInt32})
+#     state_copy = to_vector_uint32(state)
+#     decrypt!(state_copy, expanded_key)
+#     return state_copy
+# end
 
 function decrypt(state::Vector{UInt32}, expanded_key::Vector{UInt32})
     state_copy = copy(state)
