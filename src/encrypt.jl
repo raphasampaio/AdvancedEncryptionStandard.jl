@@ -161,7 +161,7 @@ function key_expansion(key::Vector{UInt8})::Vector{UInt32}
     return expanded_key
 end
 
-function encrypt!(state::Vector{UInt32}, expanded_key::Vector{UInt32})
+function encrypt!(state::Vector{UInt32}, expanded_key::Vector{UInt32})::Nothing
     keyi = 1
     add_round_key!(state, expanded_key[keyi:keyi+3])
     keyi += 4
@@ -202,5 +202,3 @@ function decrypt!(state::Vector{UInt32}, expanded_key::Vector{UInt32})
 
     return nothing
 end
-
-# encrypt(text::AbstractString, expanded_key::Vector{UInt32}) = encrypt(hex2bytes(text), expanded_key)

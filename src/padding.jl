@@ -1,4 +1,4 @@
-add_padding(data::AbstractString, args...) = add_padding(to_vector_uint32(data), args...)
+add_padding(data::AbstractString, args...) = add_padding(Vector{UInt8}(data), args...)
 
 add_padding(data::Vector{UInt32}, args...) = add_padding(to_vector_uint8(data), args...)
 
@@ -7,7 +7,7 @@ function add_padding(data::Vector{UInt8}, block_size::Integer = 16)
     return [data; map(i -> UInt8(padlen), 1:padlen)]
 end
 
-remove_padding(data::AbstractString) = remove_padding(to_vector_uint32(data))
+remove_padding(data::AbstractString) = remove_padding(Vector{UInt8}(data))
 
 remove_padding(data::Vector{UInt32}) = remove_padding(to_vector_uint8(data))
 

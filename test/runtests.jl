@@ -136,8 +136,7 @@ function test_key_expansion()
 end
 
 function test_padding()
-    a = AES.add_padding("Hello World")
-    @test a == AES.to_string(AES.remove_padding(a))
+    @test "Hello World" == String(AES.remove_padding(AES.add_padding("Hello World")))
 
     return nothing
 end
@@ -175,16 +174,17 @@ function test_encrypt()
 
     @test decrypted_state == AES.decrypt(encrypted_state, expanded_key)
 
-    decrypted_state = AES.add_padding("Hello World")
-    encrypted_state = AES.encrypt(decrypted_state, expanded_key)
+    encrypted_state = AES.encrypt(AES.add_padding("Hello World"), expanded_key)
+    @test encrypted_state == [0x9bb0e461, 0x0aea8fe5, 0x562c6dbc, 0x92da2254]
+    @test String(AES.remove_padding(AES.decrypt(encrypted_state, expanded_key))) == "Hello World"
 
     return nothing
 end
 
 function test_all()
-    # @testset "Aqua.jl" begin
-    #     test_aqua()
-    # end
+    @testset "Aqua.jl" begin
+        test_aqua()
+    end
 
     @testset "convert" begin
         test_convert()

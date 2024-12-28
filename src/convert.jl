@@ -1,9 +1,6 @@
-# function Base.hex2bytes(i::UInt32)
-#     hex = string(i, base = 16)
-#     return hex2bytes(hex)
-# end
-
-to_string(vector::Vector{UInt8})::String = to_string(to_vector_uint32(vector))
+function to_string(vector::Vector{UInt8})::String 
+    return String(vector)
+end
 
 function to_string(vector::Vector{UInt32})::String
     return String(reinterpret(UInt8, vector))
@@ -15,13 +12,13 @@ function to_vector_uint32(string::AbstractString)::Vector{UInt32}
     return reinterpret(UInt32, bytes)
 end
 
-function to_vector_uint32(vec::Vector{UInt8})::Vector{UInt32}
-    @assert length(vec) % 4 == 0
+function to_vector_uint32(vector::Vector{UInt8})::Vector{UInt32}
+    @assert length(vector) % 4 == 0
 
-    result = Vector{UInt32}(undef, length(vec) ÷ 4)
+    result = Vector{UInt32}(undef, length(vector) ÷ 4)
 
     for i in 1:length(result)
-        result[i] = (UInt32(vec[4i-3]) << 24) | (UInt32(vec[4i-2]) << 16) | (UInt32(vec[4i-1]) << 8) | UInt32(vec[4i])
+        result[i] = (UInt32(vector[4i-3]) << 24) | (UInt32(vector[4i-2]) << 16) | (UInt32(vector[4i-1]) << 8) | UInt32(vector[4i])
     end
 
     return result
