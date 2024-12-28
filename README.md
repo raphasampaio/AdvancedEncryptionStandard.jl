@@ -6,7 +6,7 @@
 
 ## Introduction
 
-AdvancedEncryptionStandard.jl is a package that implements the AES algorithm in Julia. The package is based on the [FIPS PUB 197](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197.pdf) specification.
+AdvancedEncryptionStandard.jl is a package that implements the [AES](https://en.wikipedia.org/wiki/Advanced_Encryption_Standard) algorithm in Julia. The package is based on the [FIPS PUB 197](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.197.pdf) specification.
 
 ## Getting Started
 
