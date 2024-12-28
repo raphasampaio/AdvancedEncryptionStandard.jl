@@ -20,6 +20,16 @@ julia> ] add AdvancedEncryptionStandard
 
 ```julia
 import AdvancedEncryptionStandard as AES
+
+expanded_key = AES.key_expansion("YELLOW SUBMARINE")
+
+plaintext = "Hello World"
+padded_state = AES.add_padding(plaintext)
+
+encrypted = AES.encrypt(state, expanded_key)
+decrypted = AES.decrypt(encrypted, expanded_key)
+
+decrypted_message = String(AES.remove_padding(decrypted))
 ```
 
 ## Contributing
