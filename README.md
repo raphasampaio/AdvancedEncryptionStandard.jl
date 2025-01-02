@@ -23,8 +23,8 @@ import AdvancedEncryptionStandard as AES
 
 expanded_key = AES.key_expansion("YELLOW SUBMARINE")
 
-plaintext = "Hello World"
-padded_state = AES.add_padding(plaintext)
+plain_text = "Hello World"
+state = AES.add_padding(plaintext)
 
 encrypted = AES.encrypt(state, expanded_key)
 decrypted = AES.decrypt(encrypted, expanded_key)
