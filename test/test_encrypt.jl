@@ -40,6 +40,5 @@ import AdvancedEncryptionStandard as AES
     encrypted_state = AES.encrypt(AES.add_padding("Hello World"), expanded_key)
     @test encrypted_state == [0x9bb0e461, 0x0aea8fe5, 0x562c6dbc, 0x92da2254]
     @test String(AES.remove_padding(AES.decrypt(encrypted_state, expanded_key))) == "Hello World"
-
 end
 end

@@ -10,6 +10,5 @@ import AdvancedEncryptionStandard as AES
 
     @test AES.shift_rows(a) == b
     @test AES.inv_shift_rows(b) == a
-
 end
 end

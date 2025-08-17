@@ -10,6 +10,5 @@ import AdvancedEncryptionStandard as AES
 
     @test AES.mix_columns(a) == b
     @test AES.inv_mix_columns(b) == a
-
 end
 end
