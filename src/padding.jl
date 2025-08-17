@@ -10,5 +10,5 @@ end
 remove_padding(data::Vector{UInt32}) = remove_padding(to_vector_uint8(data))
 
 function remove_padding(data::Vector{UInt8})
-    return data[1:end-data[end]]
+    return data[1:(end-data[end])]
 end

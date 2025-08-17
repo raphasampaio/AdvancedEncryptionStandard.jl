@@ -138,7 +138,7 @@ function key_expansion(key::Vector{UInt8})::Vector{UInt32}
         expanded_key[i] = k1 | k2 | k3 | k4
     end
 
-    for i in nwords+1:nwords:size
+    for i in (nwords+1):nwords:size
         temp = expanded_key[i-1]
         temp = rot_word_left(temp, 1)
         temp = sub_word(temp)
@@ -151,7 +151,7 @@ function key_expansion(key::Vector{UInt8})::Vector{UInt32}
     end
 
     for i in 1:nwords:size
-        transposed = transpose(expanded_key[i:i+3])
+        transposed = transpose(expanded_key[i:(i+3)])
 
         for j in 0:3
             expanded_key[i+j] = transposed[j+1]
@@ -163,7 +163,7 @@ end
 
 function encrypt!(state::Vector{UInt32}, expanded_key::Vector{UInt32})::Nothing
     keyi = 1
-    add_round_key!(state, expanded_key[keyi:keyi+3])
+    add_round_key!(state, expanded_key[keyi:(keyi+3)])
     keyi += 4
     rounds = length(expanded_key) ÷ 4 - 2
 
@@ -171,34 +171,34 @@ function encrypt!(state::Vector{UInt32}, expanded_key::Vector{UInt32})::Nothing
         sub_bytes!(state)
         shift_rows!(state)
         mix_columns!(state)
-        add_round_key!(state, expanded_key[keyi:keyi+3])
+        add_round_key!(state, expanded_key[keyi:(keyi+3)])
         keyi += 4
     end
 
     sub_bytes!(state)
     shift_rows!(state)
-    add_round_key!(state, expanded_key[keyi:keyi+3])
+    add_round_key!(state, expanded_key[keyi:(keyi+3)])
 
     return nothing
 end
 
 function decrypt!(state::Vector{UInt32}, expanded_key::Vector{UInt32})
     keyi = length(expanded_key) - 3
-    add_round_key!(state, expanded_key[keyi:keyi+3])
+    add_round_key!(state, expanded_key[keyi:(keyi+3)])
     keyi -= 4
     rounds = length(expanded_key) ÷ 4 - 2
 
     for _ in 1:rounds
         inv_shift_rows!(state)
         inv_sub_bytes!(state)
-        add_round_key!(state, expanded_key[keyi:keyi+3])
+        add_round_key!(state, expanded_key[keyi:(keyi+3)])
         keyi -= 4
         inv_mix_columns!(state)
     end
 
     inv_shift_rows!(state)
     inv_sub_bytes!(state)
-    add_round_key!(state, expanded_key[keyi:keyi+3])
+    add_round_key!(state, expanded_key[keyi:(keyi+3)])
 
     return nothing
 end

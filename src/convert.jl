@@ -18,7 +18,9 @@ function to_vector_uint32(vector::Vector{UInt8})::Vector{UInt32}
     result = Vector{UInt32}(undef, length(vector) ÷ 4)
 
     for i in 1:length(result)
-        result[i] = (UInt32(vector[4i-3]) << 24) | (UInt32(vector[4i-2]) << 16) | (UInt32(vector[4i-1]) << 8) | UInt32(vector[4i])
+        result[i] =
+            (UInt32(vector[4i-3]) << 24) | (UInt32(vector[4i-2]) << 16) | (UInt32(vector[4i-1]) << 8) |
+            UInt32(vector[4i])
     end
 
     return result
