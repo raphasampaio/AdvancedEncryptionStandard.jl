@@ -13,7 +13,7 @@ AdvancedEncryptionStandard.jl is a package that implements the [AES](https://en.
 ### Installation
 
 ```julia
-julia> ] add AdvancedEncryptionStandard
+pkg> add AdvancedEncryptionStandard
 ```
 
 ### Example
