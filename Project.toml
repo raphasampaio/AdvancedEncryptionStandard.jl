@@ -1,5 +1,6 @@
 name = "AdvancedEncryptionStandard"
 uuid = "ffb1ca98-47b0-4d1d-981f-3619cfc1f844"
+authors = ["raphasampaio"]
 version = "0.1.0"
 
 [deps]
